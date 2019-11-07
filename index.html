@@ -36,15 +36,18 @@
     </nav>
   </div>
 
-  <div class="parallax" ng-app="knowledge" ng-controller="infoCtrl">
+  <div class="parallax">
     <div class="jumbotron" style="width: 95%; padding: 15%; background-color:rgba(0,0,0,0.0);">
       <font color="white">
         <h1> Welcome to my website!</h1>
-        <P>What do you want to know?</P>
-        <p>
-          <input type="text" ng-model="feedBck"><br>
-          Answer is: {{ feedBck }}
-        </p>
+        <div ng-app="knowledge" ng-controller="infoCtrl">
+            <P>What do you want to know?</P>
+            <p>
+              <input type="text" ng-model="feedBck"><br>
+              Answer is: {{ feedBck }}
+            </p>
+        </div>
+        
         <p>This website is not finished yet.</p>
         <hr class="hrWhite">
         <p>This website is not finished yet.</p>
