@@ -3,14 +3,13 @@ function changeTxt() {
 }
 //Test force
 var app = angular.module('knowledge', []);
-var fullName;
 app.controller('infoCtrl', function($scope){
     $scope.firstName = "Jason";
     $scope.lastName = "Dam";
     $scope.display = function(input) {
-        if (input == 'first name'){
-            txt = firstName;
-            return $scope.firstName;
+        if (input == 'first name' || input == 'firstname' || input == 'First name' || input == 'First Name'
+        || input == 'Firstname' || input == 'FirstName'){
+            return "Jason";
         } else {
             return "Nothing is here";
         }
