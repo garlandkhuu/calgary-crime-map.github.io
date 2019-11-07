@@ -1,8 +1,9 @@
 function changeTxt() {
     document.getElementById('about').innerHTML = 'Changed';
 }
-//Test force II
+//Test force
 var app = angular.module('knowledge', []);
+var fullName;
 app.controller('infoCtrl', function($scope){
     $scope.firstName = "Jason";
     $scope.lastName = "Dam";
