@@ -36,10 +36,15 @@
     </nav>
   </div>
 
-  <div class="parallax">
+  <div class="parallax" ng-app="knowledge" ng-controller="infoCtrl">
     <div class="jumbotron" style="width: 95%; padding: 15%; background-color:rgba(0,0,0,0.0);">
       <font color="white">
         <h1> Welcome to my website!</h1>
+        <P>What do you want to know?</P>
+        <p>
+          <input type="text" ng-model="feedBck"><br>
+          Answer is: {{  }}
+        </p>
         <p>This website is not finished yet.</p>
         <hr class="hrWhite">
         <p>This website is not finished yet.</p>
@@ -174,6 +179,7 @@
     <!-- Footer Links -->
     <!-- Copyright -->
   </div>
-<script src="testFunc.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  <script src="testFunc.js"></script>
 </body>
 </html>
