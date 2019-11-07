@@ -45,8 +45,9 @@
         <p>This website is not finished yet.</p>
         <p class="lead">
       </font>
-      <button>
-        <a class="btn btn-primary btn-lg" href="#" role="button">About Me</a>
+      <button onclick="document.getElementById('about').innerHTML = 'Less About'" style="background: transparent; outline: none; overflow: hidden; border: none;">
+        <!--add aa link to button later maybe to take to contacts page? But for now I will test out JS-->
+        <a class="btn btn-primary btn-lg" role="button" id="about">About Me</a>
       </button>
       <p id="test">This website is not finished yet.</p>
       <button type="button" onclick='document.getElementById("test").style.fontSize = "32px" '>Press</button>
