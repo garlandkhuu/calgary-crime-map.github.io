@@ -60,6 +60,7 @@ const createVisualization = () => {
         svg.selectAll("path")
             .data(communities.features)
             .enter().append("path")
+            .attr('class', (d) => {return "community-" + d.properties['name'].split(/[\s /]/).join("")})
             .attr("d", path)
             .attr("fill", (d) => {
                 const communityName = d.properties["name"];
@@ -71,7 +72,10 @@ const createVisualization = () => {
             })
             .attr("stroke-width", (d) => {
                 return d.properties["name"] === selectedCommunity ? "4" : "0.5";
-            });
+            }).on('click', (d) => {
+            d3.select(".community-" + d.properties['name'].split(/[\s /]/).join("")).attr('fill','blue');
+            console.log("community-" + d.properties['name'])
+        });
 
         //Plot stations
         const station = svg.selectAll("g")
