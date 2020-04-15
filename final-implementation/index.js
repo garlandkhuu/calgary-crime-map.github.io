@@ -176,6 +176,8 @@ const createVisualization = () => {
             .text(`Community Name: ${selectedCommunity}`);
 
         infoCard.select(".card-count")
+            .text("Crime Count: " + (getTotalCrimeCounts()[selectedCommunity] ? getTotalCrimeCounts()[selectedCommunity] : "No Value"));
+
         for(var i=0; i< crimeTypes.length;i++){
             infoCard.select(".crimeType-" + i)
                 .text(crimeTypes[i] + ": " + (getCrimeType()[crimeTypes[i] + selectedCommunity] ? getCrimeType()[crimeTypes[i] + selectedCommunity] : "No Value"));
