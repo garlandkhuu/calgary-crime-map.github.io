@@ -59,6 +59,7 @@ const createVisualization = () => {
         .attr("width", "300px")
         .attr("height", "200px");
 
+    //a function used to create and update the information card
     function createInfo() {
         infoCard.append("rect")
             .attr("class", "crime-card")
@@ -69,7 +70,16 @@ const createVisualization = () => {
 
         infoCard.append("text")
             .text(`${selectedCommunity}`)
-            .attr("font-size", "36")
+            .attr("font-size", (d) => {
+                //makes it so text will fit in box
+                if (selectedCommunity.length <= 16){
+                    return 35;
+                } else if ( selectedCommunity.length < 21){
+                    return 24;
+                } else {
+                    return 18;
+                }
+            })
             .attr("transform", "translate(0, 36)");
 
         infoCard.append("text")
