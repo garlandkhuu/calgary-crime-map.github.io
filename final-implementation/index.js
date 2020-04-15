@@ -282,9 +282,6 @@ const createVisualization = () => {
                 return d['Station Name'];
             });
 
-
-
-
         //Create Legend
         d3.select(".legend").append("h3").text("Crime Count Legend");
         d3.select(".legend").append("svg")
