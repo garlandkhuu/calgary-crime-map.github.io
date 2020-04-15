@@ -10,8 +10,7 @@ const createVisualization = () => {
     var yearFilter = "2012";
     var includedCommunities = allCommunities;
     var mapToggle = false;
-
-
+    const crimeTypes = ["Assault (Non-domestic)", "Commercial Break & Enter", "Physical Disorder", "Residential Break & Enter", "Social Disorder", "Theft FROM Vehicle", "Street Robbery", "Theft OF Vehicle", "Violence Other (Non-domestic)"];
 
     //this projection scales geographic coordinates to the appropriate screen size
     var projection = d3.geoMercator()
@@ -49,6 +48,18 @@ const createVisualization = () => {
         return totalCrimes;
     };
 
+    //get data for specified crimes in specified areas
+    const getCrimeType = () => {
+        var crimeComType = {};
+        getStationCrimesForYear().forEach((crime) => {
+            const communityName = crime["Community Name"];
+            const crimeType = crime["Category"];
+            //If there is an entry in the crimeComType map for that specific community, increment the count, else, initialize to 1.
+            crimeComType[crimeType + communityName] = crimeComType[crimeType + communityName] ? crimeComType[crimeType + communityName] + 1 : 1;
+        });
+        return crimeComType;
+    };
+
     const crimeDomain = [30, 45, 60, 75, 90, 105, 120];
     const colours = ["#fce1a4", "#fabf7b", "#f08f6e", "#e05c5c", "#d12959", "#ab1866", "#6e005f"];
 
@@ -65,7 +76,7 @@ const createVisualization = () => {
     const infoCard = d3.select(".legend").append("svg")
         .attr("class", "info-card")
         .attr("width", "400px")
-        .attr("height", "215px");
+        .attr("height", "280px");
 
     //a function used to create and update the information card
     const createInfo = () => {
@@ -80,7 +91,7 @@ const createVisualization = () => {
                     return "375px";
                 }
             })
-            .attr("height", "200px")
+            .attr("height", "270px")
             .attr("stroke", "white")
             .attr("fill", "black");
 
@@ -117,6 +128,17 @@ const createVisualization = () => {
             .attr("font-size", "14")
             .attr("transform", "translate(10, 100)");
 
+        for (var i = 0; i < crimeTypes.length; i++){
+            var txtMove = 114 + (17 * i);
+            infoCard.append("text")
+                .attr("class", (d) =>{
+                    return "crimeType-" + i;
+                })
+                .text(crimeTypes[i] + `: ${getCrimeType()[crimeTypes[i] + selectedCommunity]}`)
+                .attr("font-size", "14")
+                .attr("transform", `translate(10, ${txtMove})`);
+        }
+
         infoCard.selectAll("text")
             .attr("fill", "white");
     };
@@ -132,7 +154,7 @@ const createVisualization = () => {
                     return "375px";
                 }
             })
-            .attr("height", "200px");
+            .attr("height", "270px");
 
         infoCard.select(".card-title")
             .text(`${selectedCommunity}`)
@@ -154,7 +176,10 @@ const createVisualization = () => {
             .text(`Community Name: ${selectedCommunity}`);
 
         infoCard.select(".card-count")
-            .text("Crime Count: " + (getTotalCrimeCounts()[selectedCommunity] ? getTotalCrimeCounts()[selectedCommunity] : "No Value"));
+        for(var i=0; i< crimeTypes.length;i++){
+            infoCard.select(".crimeType-" + i)
+                .text(crimeTypes[i] + ": " + (getCrimeType()[crimeTypes[i] + selectedCommunity] ? getCrimeType()[crimeTypes[i] + selectedCommunity] : "No Value"));
+        }
     };
 
     const drawMap = () => {
@@ -214,17 +239,48 @@ const createVisualization = () => {
                 }
             });
 
+        const stationName = svg.selectAll("g")
+            .data(stations).enter()
+            .append("g")
+            .attr("transform", (d) =>{
+                return `translate(${projection([d.coordinates[1], d.coordinates[0]])[0]}, ${projection([d.coordinates[1], d.coordinates[0]])[1] - 10})`
+            });
+
         //Plot stations
-        const station = svg.selectAll("g")
+        const station = svg.selectAll("g2")
             .data(stations).enter()
             .append("g")
             .attr("transform", (d) => {
                 return `translate(${projection([d.coordinates[1], d.coordinates[0]])[0]}, ${projection([d.coordinates[1], d.coordinates[0]])[1]})`
+            })
+            .on("mouseover", (d) => {
+                d3.select(".station-" + d["Station Name"].split(/[\s /]/).join("")).transition().style("opacity", 1);
+                d3.select(".circle-" + d["Station Name"].split(/[\s /]/).join("")).transition().attr("fill", "aqua");
+            })
+            .on("mouseout", (d) => {
+                d3.select(".station-" + d["Station Name"].split(/[\s /]/).join("")).transition().style("opacity", 0);
+                d3.select(".circle-" + d["Station Name"].split(/[\s /]/).join("")).transition().attr("fill", "blue");
             });
 
         station.append("circle")
-            .attr("r", "3.5px")
-            .attr("fill", "blue");
+            .attr("r", "4px")
+            .attr("fill", "blue")
+            .attr("class", (d)=>{
+               return "circle-" + d["Station Name"].split(/[\s /]/).join("");
+            });
+
+        stationName.append("text")
+            .attr("fill", "white")
+            .attr("class", (d)=>{
+                return "station-" + d["Station Name"].split(/[\s /]/).join("");
+            })
+            .attr("pointer-events", "none")
+            .style("opacity", 0)
+            .text( (d) =>{
+                return d['Station Name'];
+            });
+
+
 
 
         //Create Legend
@@ -332,18 +388,6 @@ const createVisualization = () => {
                 return d.properties["name"] === selectedCommunity ? "4" : "0.5";
             })
             .attr("stroke-opacity", 1);
-
-        //Plot stations
-        const station = svg.selectAll("g")
-            .data(stations).enter()
-            .append("g")
-            .attr("transform", (d) => {
-                return `translate(${projection([d.coordinates[1], d.coordinates[0]])[0]}, ${projection([d.coordinates[1], d.coordinates[0]])[1]})`
-            });
-
-        station.append("circle")
-            .attr("r", "3.5px")
-            .attr("fill", "blue");
     };
 
     drawMap();
