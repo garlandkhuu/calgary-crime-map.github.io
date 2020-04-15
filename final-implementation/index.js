@@ -65,7 +65,7 @@ const createVisualization = () => {
             .attr("class", "crime-card")
             .attr("width", "300px")
             .attr("height", "200px")
-            .attr("stroke", "black")
+            .attr("stroke", "white")
             .attr("fill", "white");
 
         infoCard.append("text")
@@ -122,8 +122,11 @@ const createVisualization = () => {
             .on('click', (d) => {
                 d3.select(".community-" + d.properties['name'].split(/[\s /]/).join("")).attr('fill','orange');
                 selectedCommunity = d.properties['name'];
-                createInfo();
-                console.log("community-" + d.properties['name'])
+                if (getTotalCrimeCounts()[selectedCommunity] != undefined){
+                    createInfo();
+                }
+                console.log("community-" + d.properties['name']);
+                console.log(getTotalCrimeCounts()[selectedCommunity])
             })
             .on("mouseover", (d) => {
                 d3.select(".community-" + d.properties['name'].split(/[\s /]/).join("")).attr('fill','blue');
@@ -216,7 +219,9 @@ const createVisualization = () => {
         .on('onchange', d => {
             yearFilter = yearSlider.value().toString();
             updateMap();
-            createInfo();
+            if(getTotalCrimeCounts()[selectedCommunity] != undefined){
+                createInfo();
+            }
         });
 
     var sliderChange = d3.selectAll('div#slider-step')
