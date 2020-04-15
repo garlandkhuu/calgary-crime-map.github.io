@@ -129,12 +129,12 @@ const createVisualization = () => {
                 console.log(getTotalCrimeCounts()[selectedCommunity])
             })
             .on("mouseover", (d) => {
-                d3.select(".community-" + d.properties['name'].split(/[\s /]/).join("")).attr('fill','blue');
+                d3.select(".community-" + d.properties['name'].split(/[\s /]/).join("")).transition().attr('fill','blue');
             })
             .on("mouseout", (d) => {
                 const communityName = d.properties["name"];
                 //Colour the station communities the appropriate saturation of red, white if not station community
-                d3.select(".community-" + d.properties['name'].split(/[\s /]/).join("")).attr('fill', communitiesNearStations.includes(communityName) ? colourScale(newCrimeCounts[communityName]) : "#ffffff");
+                d3.select(".community-" + d.properties['name'].split(/[\s /]/).join("")).transition().attr('fill', communitiesNearStations.includes(communityName) ? colourScale(newCrimeCounts[communityName]) : "#ffffff");
             });
 
         //Plot stations
