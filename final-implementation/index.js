@@ -5,6 +5,7 @@ const createVisualization = () => {
     const width = 950, height = 1100;
     var selectedCommunity = "DOWNTOWN COMMERCIAL CORE";
     var yearFilter = "2012";
+    const crimeTypes = ["Assault (Non-domestic)", "Commercial Break & Enter", "Physical Disorder", "Residential Break & Enter", "Social Disorder", "Theft FROM Vehicle", "Street Robbery", "Theft OF Vehicle", "Violence Other (Non-domestic)"];
 
     //this projection scales geographic coordinates to the appropriate screen size
     var projection = d3.geoMercator()
@@ -42,6 +43,18 @@ const createVisualization = () => {
         return totalCrimes;
     };
 
+    //get data for specified crimes in specified areas
+    const getCrimeType = () => {
+        var crimeComType = {};
+        getStationCrimesForYear().forEach((crime) => {
+            const communityName = crime["Community Name"];
+            const crimeType = crime["Category"];
+            //If there is an entry in the crimeComType map for that specific community, increment the count, else, initialize to 1.
+            crimeComType[crimeType + communityName] = crimeComType[crimeType + communityName] ? crimeComType[crimeType + communityName] + 1 : 1;
+        });
+        return crimeComType;
+    };
+
     const crimeDomain = [30, 45, 60, 75, 90, 105, 120];
     const colours = ["#fce1a4", "#fabf7b", "#f08f6e", "#e05c5c", "#d12959", "#ab1866", "#6e005f"];
 
@@ -58,7 +71,7 @@ const createVisualization = () => {
     const infoCard = d3.select(".legend").append("svg")
         .attr("class", "info-card")
         .attr("width", "400px")
-        .attr("height", "200px");
+        .attr("height", "250px");
 
     //a function used to create and update the information card
     const createInfo = () => {
@@ -73,7 +86,7 @@ const createVisualization = () => {
                     return "375px";
                 }
             })
-            .attr("height", "200px")
+            .attr("height", "250px")
             .attr("stroke", "white")
             .attr("fill", "black");
 
@@ -110,6 +123,17 @@ const createVisualization = () => {
             .attr("font-size", "14")
             .attr("transform", "translate(10, 100)");
 
+        for (var i = 0; i < crimeTypes.length; i++){
+            var txtMove = 114 + (14 * i);
+            infoCard.append("text")
+                .attr("class", (d) =>{
+                    return "crimeType-" + i;
+                })
+                .text(crimeTypes[i] + `: ${getCrimeType()[crimeTypes[i] + selectedCommunity]}`)
+                .attr("font-size", "14")
+                .attr("transform", `translate(10, ${txtMove})`);
+        }
+
         infoCard.selectAll("text")
             .attr("fill", "white");
     };
@@ -125,7 +149,7 @@ const createVisualization = () => {
                     return "375px";
                 }
             })
-            .attr("height", "200px");
+            .attr("height", "250px");
 
         infoCard.select(".card-title")
             .text(`${selectedCommunity}`)
@@ -148,6 +172,11 @@ const createVisualization = () => {
 
         infoCard.select(".card-count")
             .text(`Crime Count: ${getTotalCrimeCounts()[selectedCommunity]}`);
+
+        for(var i=0; i< crimeTypes.length;i++){
+            infoCard.select(".crimeType-" + i)
+                .text(crimeTypes[i] + `: ${getCrimeType()[crimeTypes[i] + selectedCommunity]}`)
+        }
     };
 
     const drawMap = () => {
