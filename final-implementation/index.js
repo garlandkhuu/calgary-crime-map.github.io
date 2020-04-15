@@ -209,12 +209,40 @@ const createVisualization = () => {
                 }
             });
 
+        const stationName = svg.selectAll("g")
+            .data(stations).enter()
+            .append("g")
+            // .attr("class", (d)=>{
+            //     return "station-" + d["Station Name"].split(/[\s /]/).join("");
+            // })
+            .attr("transform", (d) =>{
+                return `translate(${projection([d.coordinates[1], d.coordinates[0]])[0]}, ${projection([d.coordinates[1], d.coordinates[0]])[1]})`
+            });
+
         //Plot stations
-        const station = svg.selectAll("g")
+        const station = svg.selectAll("g2")
             .data(stations).enter()
             .append("g")
             .attr("transform", (d) => {
                 return `translate(${projection([d.coordinates[1], d.coordinates[0]])[0]}, ${projection([d.coordinates[1], d.coordinates[0]])[1]})`
+            })
+            .on("mouseover", (d) => {
+                console.log("plotover");
+                d3.select(".station-" + d["Station Name"].split(/[\s /]/).join("")).transition().style("opacity", 1);
+            })
+            .on("mouseout", (d) => {
+                console.log("plotoff");
+                d3.select(".station-" + d["Station Name"].split(/[\s /]/).join("")).transition().style("opacity", 0);
+            });
+
+        stationName.append("text")
+            .attr("fill", "white")
+            .attr("class", (d)=>{
+                return "station-" + d["Station Name"].split(/[\s /]/).join("");
+            })
+            .style("opacity", 0)
+            .text( (d) =>{
+                return d['Station Name'];
             });
 
         station.append("circle")
