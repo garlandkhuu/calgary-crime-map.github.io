@@ -5,7 +5,7 @@ const createVisualization = () => {
     const width = 950, height = 1100;
     var selectedCommunity = "DOWNTOWN COMMERCIAL CORE";
     var yearFilter = "2012";
-    const crimeTypes = ["Assault (Non-domestic)", "Commercial Break & Enter", "Physical Disorder", "Residential Break & Enter", "Social Disorder", "Theft FROM Vehicle", "Street Robbery", "Theft OF Vehicle", "Violence Other (Non-domestic)"];
+    const crimeTypes = ["Assault (Non-domestic)", "Commercial Break & Enter", "Commercial Robbery","Physical Disorder", "Residential Break & Enter", "Social Disorder", "Theft FROM Vehicle", "Street Robbery", "Theft OF Vehicle", "Violence Other (Non-domestic)"];
 
     //this projection scales geographic coordinates to the appropriate screen size
     var projection = d3.geoMercator()
@@ -71,7 +71,7 @@ const createVisualization = () => {
     const infoCard = d3.select(".legend").append("svg")
         .attr("class", "info-card")
         .attr("width", "400px")
-        .attr("height", "250px");
+        .attr("height", "260px");
 
     //a function used to create and update the information card
     const createInfo = () => {
@@ -86,7 +86,7 @@ const createVisualization = () => {
                     return "375px";
                 }
             })
-            .attr("height", "250px")
+            .attr("height", "260px")
             .attr("stroke", "white")
             .attr("fill", "black");
 
@@ -149,7 +149,7 @@ const createVisualization = () => {
                     return "375px";
                 }
             })
-            .attr("height", "250px");
+            .attr("height", "260px");
 
         infoCard.select(".card-title")
             .text(`${selectedCommunity}`)
