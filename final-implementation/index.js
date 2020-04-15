@@ -3,7 +3,7 @@
 
 const createVisualization = () => {
     const width = 950, height = 1100;
-    var selectedCommunity = "VARSITY";
+    var selectedCommunity = "DOWNTOWN COMMERCIAL CORE";
     var yearFilter = "2012";
 
     //this projection scales geographic coordinates to the appropriate screen size
@@ -42,8 +42,8 @@ const createVisualization = () => {
         return totalCrimes;
     };
 
-    const crimeDomain = [30, 50, 70, 90, 110, 130];
-    const colours = ["#ffe6e6", "#ffcccc", "#ff9999", "#ff4d4d", "#ff0000", "#b30000"];
+    const crimeDomain = [30, 45, 60, 75, 90, 105, 120];
+    const colours = ["#fce1a4", "#fabf7b", "#f08f6e", "#e05c5c", "#d12959", "#ab1866", "#6e005f"];
 
     //Create the scale functions for colour of community depending on crime count in domain
     const colourScale = d3.scaleThreshold()
@@ -56,49 +56,99 @@ const createVisualization = () => {
 
     //Create crime information card
     const infoCard = d3.select(".legend").append("svg")
-        .attr("width", "300px")
+        .attr("class", "info-card")
+        .attr("width", "400px")
         .attr("height", "200px");
 
     //a function used to create and update the information card
-    function createInfo() {
+    const createInfo = () => {
         infoCard.append("rect")
             .attr("class", "crime-card")
-            .attr("width", "300px")
+            .attr("width", (d) => {
+                if (selectedCommunity.length <= 13){
+                    return "300px";
+                } else if ( selectedCommunity.length < 19){
+                    return "335px";
+                } else {
+                    return "375px";
+                }
+            })
             .attr("height", "200px")
             .attr("stroke", "white")
-            .attr("fill", "white");
+            .attr("fill", "black");
 
         infoCard.append("text")
+            .attr("class", "card-title")
             .text(`${selectedCommunity}`)
             .attr("font-size", (d) => {
                 //makes it so text will fit in box
-                if (selectedCommunity.length <= 16){
+                if (selectedCommunity.length <= 13){
                     return 35;
-                } else if ( selectedCommunity.length < 21){
+                } else if ( selectedCommunity.length < 19){
                     return 24;
                 } else {
-                    return 18;
+                    return 20;
                 }
             })
-            .attr("transform", "translate(0, 36)");
+            .attr("transform", "translate(10, 36)");
 
         infoCard.append("text")
+            .attr("class", "card-year")
+            .text(`Year: ${yearFilter}`)
+            .attr("font-size", "14")
+            .attr("transform", "translate(10, 72)");
+
+        infoCard.append("text")
+            .attr("class", "card-name")
             .text(`Community Name: ${selectedCommunity}`)
             .attr("font-size", "14")
-            .attr("transform", "translate(4, 72)");
+            .attr("transform", "translate(10, 86)");
 
         infoCard.append("text")
+            .attr("class", "card-count")
             .text(`Crime Count: ${getTotalCrimeCounts()[selectedCommunity]}`)
             .attr("font-size", "14")
-            .attr("transform", "translate(4, 86)");
+            .attr("transform", "translate(10, 100)");
 
-        svg.append("line")
-            .attr("x1", "1000.125")
-            .attr("y1", "266.625")
-            .attr("x2", "1200")
-            .attr("y2", "200")
-            .attr("stroke", "black");
-    }
+        infoCard.selectAll("text")
+            .attr("fill", "white");
+    };
+
+    const updateInfo = () => {
+        d3.select(".info-card").select("rect")
+            .attr("width", (d) => {
+                if (selectedCommunity.length <= 13){
+                    return "300px";
+                } else if ( selectedCommunity.length < 19){
+                    return "335px";
+                } else {
+                    return "375px";
+                }
+            })
+            .attr("height", "200px");
+
+        infoCard.select(".card-title")
+            .text(`${selectedCommunity}`)
+            .attr("font-size", (d) => {
+                //makes it so text will fit in box
+                if (selectedCommunity.length <= 13){
+                    return 35;
+                } else if ( selectedCommunity.length < 19){
+                    return 24;
+                } else {
+                    return 20;
+                }
+            });
+
+        infoCard.select(".card-year")
+            .text(`Year: ${yearFilter}`);
+
+        infoCard.select(".card-name")
+            .text(`Community Name: ${selectedCommunity}`);
+
+        infoCard.select(".card-count")
+            .text(`Crime Count: ${getTotalCrimeCounts()[selectedCommunity]}`);
+    };
 
     const drawMap = () => {
         const newCrimeCounts = getTotalCrimeCounts();
@@ -106,35 +156,57 @@ const createVisualization = () => {
         svg.selectAll("path")
             .data(communities.features)
             .enter().append("path")
-            .attr('class', (d) => {return "community-" + d.properties['name'].split(/[\s /]/).join("")})
+            .attr("class", (d) => {return "community-" + d.properties["name"].split(/[\s /]/).join("")})
             .attr("d", path)
             .attr("fill", (d) => {
                 const communityName = d.properties["name"];
                 //Colour the station communities the appropriate saturation of red, white if not station community
-                return communitiesNearStations.includes(communityName) ? colourScale(newCrimeCounts[communityName]) : "#ffffff";
+                return communitiesNearStations.includes(communityName) ? colourScale(newCrimeCounts[communityName]) : "black";
             })
             .attr("stroke", (d) => {
-                return d.properties["name"] === selectedCommunity ? "aqua" : "black";
+                return d.properties["name"] === selectedCommunity ? "aqua" : "white";
             })
             .attr("stroke-width", (d) => {
                 return d.properties["name"] === selectedCommunity ? "4" : "0.5";
             })
-            .on('click', (d) => {
-                d3.select(".community-" + d.properties['name'].split(/[\s /]/).join("")).attr('fill','orange');
-                selectedCommunity = d.properties['name'];
-                if (getTotalCrimeCounts()[selectedCommunity] != undefined){
-                    createInfo();
+            .attr("stroke-opacity", 1)
+            .on("click", (d) => {
+                if(!(d.properties["name"] === selectedCommunity) && communitiesNearStations.includes(d.properties["name"])){
+                    d3.select(".community-" + d.properties["name"].split(/[\s /]/).join(""))
+                        .attr("fill","aqua");
+                    selectedCommunity = d.properties["name"];
+                    if (getTotalCrimeCounts()[selectedCommunity] != undefined){
+                        updateInfo();
+                        updateMap();
+                    }
                 }
-                console.log("community-" + d.properties['name']);
+                console.log("community-" + d.properties["name"]);
                 console.log(getTotalCrimeCounts()[selectedCommunity])
             })
             .on("mouseover", (d) => {
-                d3.select(".community-" + d.properties['name'].split(/[\s /]/).join("")).transition().attr('fill','blue');
+                //Turn stroke to transparent aqua went mouse over except for the selected community
+                if (!(d.properties["name"] === selectedCommunity) && communitiesNearStations.includes(d.properties["name"])){
+                    d3.select(".community-" + d.properties["name"].split(/[\s /]/).join(""))
+                        .transition()
+                        .attr("stroke","aqua")
+                        .attr("stroke-width", 4)
+                        .attr("stroke-opacity", 0.5);
+                }
+                //For communities far from stations, turn stroke thicker
+                else {
+                    d3.select(".community-" + d.properties["name"].split(/[\s /]/).join(""))
+                        .attr("stroke-width", 2)
+                }
             })
             .on("mouseout", (d) => {
-                const communityName = d.properties["name"];
-                //Colour the station communities the appropriate saturation of red, white if not station community
-                d3.select(".community-" + d.properties['name'].split(/[\s /]/).join("")).transition().attr('fill', communitiesNearStations.includes(communityName) ? colourScale(newCrimeCounts[communityName]) : "#ffffff");
+                //revert stroke back to normal after mouse out for non selected communities
+                if (!(d.properties["name"] === selectedCommunity)){
+                    d3.select(".community-" + d.properties["name"].split(/[\s /]/).join(""))
+                        .transition()
+                        .attr("stroke","white")
+                        .attr("stroke-width", 0.5)
+                        .attr("stroke-opacity", 1);
+                }
             });
 
         //Plot stations
@@ -161,14 +233,15 @@ const createVisualization = () => {
             .attr("fill", (d) => {
                 const communityName = d.properties["name"];
                 //Colour the station communities the appropriate saturation of red, white if not station community
-                return communitiesNearStations.includes(communityName) ? colourScale(newCrimeCounts[communityName]) : "#ffffff";
+                return communitiesNearStations.includes(communityName) ? colourScale(newCrimeCounts[communityName]) : "black";
             })
             .attr("stroke", (d) => {
-                return d.properties["name"] === selectedCommunity ? "aqua" : "black";
+                return d.properties["name"] === selectedCommunity ? "aqua" : "white";
             })
             .attr("stroke-width", (d) => {
                 return d.properties["name"] === selectedCommunity ? "4" : "0.5";
-            });
+            })
+            .attr("stroke-opacity", 1);
 
         //Plot stations
         const station = svg.selectAll("g")
@@ -203,10 +276,15 @@ const createVisualization = () => {
 
     var legendBox = d3.select(".legend-box");
 
+    legendBox
+        .attr("height", "200px");
+
     legendBox.select(".legend-quant")
         .call(legend);
 
-    //hard coded year
+    legendBox.selectAll(".label")
+        .attr("fill", "white")
+    //years
     var yrData = [2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019];
     var yearSlider = d3.sliderBottom()
         .min(d3.min(yrData))
@@ -216,20 +294,30 @@ const createVisualization = () => {
         // .tickFormat(d3.format("4s"))
         .step(1)
         .default(yearFilter)
-        .on('onchange', d => {
+        .on("onchange", d => {
             yearFilter = yearSlider.value().toString();
             updateMap();
             if(getTotalCrimeCounts()[selectedCommunity] != undefined){
-                createInfo();
+                updateInfo();
             }
         });
 
-    var sliderChange = d3.selectAll('div#slider-step')
-        .append('svg')
-        .attr('width', 500)
-        .attr('height', 100)
-        .append('g')
-        .attr('transform', 'translate(30,30)');
+    var sliderChange = d3.selectAll("div#slider-step")
+        .append("svg")
+        .attr("width", 500)
+        .attr("height", 100)
+        .append("g")
+        .attr("transform", "translate(30,30)");
+
+    console.log(d3.select("#slider-step").select("#parameter-value"));
 
     sliderChange.call(yearSlider);
+
+    d3.select("#slider-step").select("svg")
+        .attr("fill", "white")
+        .attr("transform", "translate(-15, 0)");
+
+    d3.select("#slider-step").select(".slider")
+        .attr("cursor", "pointer");
+
 };

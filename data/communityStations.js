@@ -71,5 +71,7 @@ const communitiesNearStations = [
     "WEST HILLHURST",
     "MILLRISE",
     "FISH CREEK PARK",
-    "STRATHCONA PARK"
+    "STRATHCONA PARK",
+    "MISSION",
+    "ROXBORO"
 ];
