@@ -291,6 +291,7 @@ const createVisualization = () => {
         .max(d3.max(yrData))
         .width(350)
         .ticks(8,"s")
+        .tickFormat(d3.format(".0f"))
         // .tickFormat(d3.format("4s"))
         .step(1)
         .default(yearFilter)
