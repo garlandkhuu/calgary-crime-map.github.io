@@ -213,7 +213,7 @@ const createVisualization = () => {
             .data(stations).enter()
             .append("g")
             .attr("transform", (d) =>{
-                return `translate(${projection([d.coordinates[1], d.coordinates[0]])[0]}, ${projection([d.coordinates[1], d.coordinates[0]])[1]})`
+                return `translate(${projection([d.coordinates[1], d.coordinates[0]])[0]}, ${projection([d.coordinates[1], d.coordinates[0]])[1] - 10})`
             });
 
         //Plot stations
@@ -226,15 +226,20 @@ const createVisualization = () => {
             .on("mouseover", (d) => {
                 console.log("plotover");
                 d3.select(".station-" + d["Station Name"].split(/[\s /]/).join("")).transition().style("opacity", 1);
+                d3.select(".circle-" + d["Station Name"].split(/[\s /]/).join("")).transition().attr("fill", "aqua");
             })
             .on("mouseout", (d) => {
                 console.log("plotoff");
                 d3.select(".station-" + d["Station Name"].split(/[\s /]/).join("")).transition().style("opacity", 0);
+                d3.select(".circle-" + d["Station Name"].split(/[\s /]/).join("")).transition().attr("fill", "blue");
             });
 
         station.append("circle")
             .attr("r", "3.5px")
-            .attr("fill", "blue");
+            .attr("fill", "blue")
+            .attr("class", (d)=>{
+               return "circle-" + d["Station Name"].split(/[\s /]/).join("");
+            });
 
         stationName.append("text")
             .attr("fill", "white")
