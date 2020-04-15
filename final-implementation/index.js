@@ -3,7 +3,7 @@
 
 const createVisualization = () => {
     const width = 950, height = 1100;
-    const selectedCommunity = "VARSITY";
+    var selectedCommunity = "VARSITY";
     var yearFilter = "2012";
 
     //this projection scales geographic coordinates to the appropriate screen size
@@ -54,46 +54,12 @@ const createVisualization = () => {
         .attr("width", width)
         .attr("height", height);
 
-    const drawMap = () => {
-        const newCrimeCounts = getTotalCrimeCounts();
-        //Create Calgary map with community borders
-        svg.selectAll("path")
-            .data(communities.features)
-            .enter().append("path")
-            .attr('class', (d) => {return "community-" + d.properties['name'].split(/[\s /]/).join("")})
-            .attr("d", path)
-            .attr("fill", (d) => {
-                const communityName = d.properties["name"];
-                //Colour the station communities the appropriate saturation of red, white if not station community
-                return communitiesNearStations.includes(communityName) ? colourScale(newCrimeCounts[communityName]) : "#ffffff";
-            })
-            .attr("stroke", (d) => {
-                return d.properties["name"] === selectedCommunity ? "aqua" : "black";
-            })
-            .attr("stroke-width", (d) => {
-                return d.properties["name"] === selectedCommunity ? "4" : "0.5";
-            }).on('click', (d) => {
-            d3.select(".community-" + d.properties['name'].split(/[\s /]/).join("")).attr('fill','blue');
-            console.log("community-" + d.properties['name'])
-        });
+    //Create crime information card
+    const infoCard = d3.select(".legend").append("svg")
+        .attr("width", "300px")
+        .attr("height", "200px");
 
-        //Plot stations
-        const station = svg.selectAll("g")
-            .data(stations).enter()
-            .append("g")
-            .attr("transform", (d) => {
-                return `translate(${projection([d.coordinates[1], d.coordinates[0]])[0]}, ${projection([d.coordinates[1], d.coordinates[0]])[1]})`
-            });
-
-        station.append("circle")
-            .attr("r", "3.5px")
-            .attr("fill", "blue");
-
-        //Create crime information card
-        const infoCard = d3.select(".legend").append("svg")
-            .attr("width", "300px")
-            .attr("height", "200px");
-
+    function createInfo() {
         infoCard.append("rect")
             .attr("class", "crime-card")
             .attr("width", "300px")
@@ -122,6 +88,55 @@ const createVisualization = () => {
             .attr("x2", "1200")
             .attr("y2", "200")
             .attr("stroke", "black");
+    }
+
+    const drawMap = () => {
+        const newCrimeCounts = getTotalCrimeCounts();
+        //Create Calgary map with community borders
+        svg.selectAll("path")
+            .data(communities.features)
+            .enter().append("path")
+            .attr('class', (d) => {return "community-" + d.properties['name'].split(/[\s /]/).join("")})
+            .attr("d", path)
+            .attr("fill", (d) => {
+                const communityName = d.properties["name"];
+                //Colour the station communities the appropriate saturation of red, white if not station community
+                return communitiesNearStations.includes(communityName) ? colourScale(newCrimeCounts[communityName]) : "#ffffff";
+            })
+            .attr("stroke", (d) => {
+                return d.properties["name"] === selectedCommunity ? "aqua" : "black";
+            })
+            .attr("stroke-width", (d) => {
+                return d.properties["name"] === selectedCommunity ? "4" : "0.5";
+            })
+            .on('click', (d) => {
+                d3.select(".community-" + d.properties['name'].split(/[\s /]/).join("")).attr('fill','orange');
+                selectedCommunity = d.properties['name'];
+                createInfo();
+                console.log("community-" + d.properties['name'])
+            })
+            .on("mouseover", (d) => {
+                d3.select(".community-" + d.properties['name'].split(/[\s /]/).join("")).attr('fill','blue');
+            })
+            .on("mouseout", (d) => {
+                const communityName = d.properties["name"];
+                //Colour the station communities the appropriate saturation of red, white if not station community
+                d3.select(".community-" + d.properties['name'].split(/[\s /]/).join("")).attr('fill', communitiesNearStations.includes(communityName) ? colourScale(newCrimeCounts[communityName]) : "#ffffff");
+            });
+
+        //Plot stations
+        const station = svg.selectAll("g")
+            .data(stations).enter()
+            .append("g")
+            .attr("transform", (d) => {
+                return `translate(${projection([d.coordinates[1], d.coordinates[0]])[0]}, ${projection([d.coordinates[1], d.coordinates[0]])[1]})`
+            });
+
+        station.append("circle")
+            .attr("r", "3.5px")
+            .attr("fill", "blue");
+
+        createInfo();
     };
 
     const updateMap = () => {
@@ -184,12 +199,14 @@ const createVisualization = () => {
         .min(d3.min(yrData))
         .max(d3.max(yrData))
         .width(350)
-        .ticks(8)
+        .ticks(8,"s")
+        // .tickFormat(d3.format("4s"))
         .step(1)
         .default(yearFilter)
         .on('onchange', d => {
             yearFilter = yearSlider.value().toString();
             updateMap();
+            createInfo();
         });
 
     var sliderChange = d3.selectAll('div#slider-step')
