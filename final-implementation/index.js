@@ -7,7 +7,7 @@ const createVisualization = () => {
     });
     const width = 950, height = 1100;
     var selectedCommunity = "DOWNTOWN COMMERCIAL CORE";
-    var yearFilter = "2012";
+    var yearFilter = "2019";
     var includedCommunities = allCommunities;
     var mapToggle = false;
     const crimeTypes = ["Assault (Non-domestic)", "Commercial Break & Enter", "Physical Disorder", "Residential Break & Enter", "Social Disorder", "Theft FROM Vehicle", "Street Robbery", "Theft OF Vehicle", "Violence Other (Non-domestic)"];
