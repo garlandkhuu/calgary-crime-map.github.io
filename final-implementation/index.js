@@ -15,7 +15,7 @@ const createVisualization = () => {
     //this projection scales geographic coordinates to the appropriate screen size
     var projection = d3.geoMercator()
         .center([-114.0719, 51.0447])
-        .scale(100000)
+        .scale(95000)
         .translate([width/2, height/2 - 50]);
 
     var path = d3.geoPath()
@@ -69,6 +69,15 @@ const createVisualization = () => {
     };
 
     var crimeTypeMap = getCrimeType();
+
+    const isCrimeCountValid = (crimeType) => {
+        if(crimeTypeMap[selectedCommunity]){
+            if(crimeTypeMap[selectedCommunity][crimeType])
+                return true;
+            return false;
+        }
+        return false
+    }
 
     const crimeDomain = [30, 45, 60, 75, 90, 105, 120];
     const colours = ["#fce1a4", "#fabf7b", "#f08f6e", "#e05c5c", "#d12959", "#ab1866", "#6e005f"];
@@ -144,7 +153,7 @@ const createVisualization = () => {
                 .attr("class", (d) =>{
                     return "crimeType-" + i;
                 })
-                .text(crimeTypes[i] + ": " + (crimeTypeMap[selectedCommunity] ? crimeTypeMap[selectedCommunity][crimeTypes[i]] : "No Value"))
+                .text(crimeTypes[i] + ": " + (isCrimeCountValid(crimeTypes[i]) ? crimeTypeMap[selectedCommunity][crimeTypes[i]] : "No Value"))
                 .attr("font-size", "14")
                 .attr("transform", `translate(10, ${txtMove})`);
         }
@@ -190,7 +199,7 @@ const createVisualization = () => {
 
         for(var i=0; i< crimeTypes.length;i++){
             infoCard.select(".crimeType-" + i)
-                .text(crimeTypes[i] + ": " + (crimeTypeMap[selectedCommunity] ? crimeTypeMap[selectedCommunity][crimeTypes[i]] : "No Value"));
+                .text(crimeTypes[i] + ": " + (isCrimeCountValid(crimeTypes[i]) ? crimeTypeMap[selectedCommunity][crimeTypes[i]] : "No Value"));
         }
     };
 
@@ -208,7 +217,7 @@ const createVisualization = () => {
                 return includedCommunities.includes(communityName) ? colourScale(newCrimeCounts[communityName]) : "black";
             })
             .attr("stroke", (d) => {
-                return d.properties["name"] === selectedCommunity ? "aqua" : "white";
+                return d.properties["name"] === selectedCommunity ? "#00ffd1" : "white";
             })
             .attr("stroke-width", (d) => {
                 return d.properties["name"] === selectedCommunity ? "4" : "0.5";
@@ -217,7 +226,7 @@ const createVisualization = () => {
             .on("click", (d) => {
                 if(!(d.properties["name"] === selectedCommunity) && includedCommunities.includes(d.properties["name"])){
                     d3.select(".community-" + d.properties["name"].split(/[\s /]/).join(""))
-                        .attr("fill","aqua");
+                        .attr("fill","#00ffd1");
                     selectedCommunity = d.properties["name"];
                     updateInfo();
                     updateMap();
@@ -226,11 +235,11 @@ const createVisualization = () => {
                 console.log(getTotalCrimeCounts()[selectedCommunity])
             })
             .on("mouseover", (d) => {
-                //Turn stroke to transparent aqua went mouse over except for the selected community
+                //Turn stroke to transparent #00ffd1 went mouse over except for the selected community
                 if (!(d.properties["name"] === selectedCommunity) && includedCommunities.includes(d.properties["name"])){
                     d3.select(".community-" + d.properties["name"].split(/[\s /]/).join(""))
                         .transition()
-                        .attr("stroke","aqua")
+                        .attr("stroke","#00ffd1")
                         .attr("stroke-width", 4)
                         .attr("stroke-opacity", 0.5);
                 }
@@ -261,16 +270,16 @@ const createVisualization = () => {
             })
             .on("mouseover", (d) => {
                 d3.select(".station-" + d["Station Name"].split(/[\s /]/).join("")).transition().style("opacity", 1);
-                d3.select(".circle-" + d["Station Name"].split(/[\s /]/).join("")).transition().attr("fill", "aqua");
+                d3.select(".circle-" + d["Station Name"].split(/[\s /]/).join("")).transition().attr("fill", "#00ffd1");
             })
             .on("mouseout", (d) => {
                 d3.select(".station-" + d["Station Name"].split(/[\s /]/).join("")).transition().style("opacity", 0);
-                d3.select(".circle-" + d["Station Name"].split(/[\s /]/).join("")).transition().attr("fill", "#0078d2");
+                d3.select(".circle-" + d["Station Name"].split(/[\s /]/).join("")).transition().attr("fill", "#03c9ac");
             });
 
         station.append("circle")
             .attr("r", "4px")
-            .attr("fill", "#006ff3")
+            .attr("fill", "#03c9ac")
             .attr("class", (d)=>{
                return "circle-" + d["Station Name"].split(/[\s /]/).join("");
             });
@@ -392,7 +401,7 @@ const createVisualization = () => {
                 return includedCommunities.includes(communityName) ? colourScale(newCrimeCounts[communityName]) : "black";
             })
             .attr("stroke", (d) => {
-                return d.properties["name"] === selectedCommunity ? "aqua" : "white";
+                return d.properties["name"] === selectedCommunity ? "#00ffd1" : "white";
             })
             .attr("stroke-width", (d) => {
                 return d.properties["name"] === selectedCommunity ? "4" : "0.5";

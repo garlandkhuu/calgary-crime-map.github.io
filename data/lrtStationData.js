@@ -35,7 +35,6 @@ const stations = [
   {"Station Name":"University","latitude":"51.08000226784484","coordinates":[51.08000226784484, -114.12290918356616],"longitude":"-114.12290918356616"},
   {"Station Name":"Sirocco","latitude":"51.03837970398405","coordinates":[51.03837970398405, -114.16904423715047],"longitude":"-114.16904423715047"},
   {"Station Name":"Sunnyside","latitude":"51.05626036973093","coordinates":[51.05626036973093, -114.08439246737201],"longitude":"-114.08439246737201"},
-  {"Station Name":"Downtown West - Kerby Station","latitude":"51.04723334280586","coordinates":[51.04723334280586, -114.08724862368886],"longitude":"-114.08724862368886"},
   {"Station Name":"Erlton / Stampede","latitude":"51.032060142857866","coordinates":[51.032060142857866, -114.05890028902643],"longitude":"-114.05890028902643"},
   {"Station Name":"69 St SW","latitude":"51.037645115945246","coordinates":[51.037645115945246, -114.18760937033547],"longitude":"-114.18760937033547"},
   {"Station Name":"Barlow / Max Bell","latitude":"51.04549575173873","coordinates":[51.04549575173873, -114.00661321060373],"longitude":"-114.00661321060373"},
