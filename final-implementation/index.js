@@ -51,14 +51,24 @@ const createVisualization = () => {
     //get data for specified crimes in specified areas
     const getCrimeType = () => {
         var crimeComType = {};
+
+        //make an empty object for each community
+        getStationCrimesForYear().forEach((crime) => {
+            const communityName = crime["Community Name"];
+            crimeComType[communityName] = {};
+        });
+
+        //Populate each community with its different crimes
         getStationCrimesForYear().forEach((crime) => {
             const communityName = crime["Community Name"];
             const crimeType = crime["Category"];
             //If there is an entry in the crimeComType map for that specific community, increment the count, else, initialize to 1.
-            crimeComType[crimeType + communityName] = crimeComType[crimeType + communityName] ? crimeComType[crimeType + communityName] + 1 : 1;
+            crimeComType[communityName][crimeType] = crimeComType[communityName][crimeType] ? crimeComType[communityName][crimeType] + 1 : 1;
         });
         return crimeComType;
     };
+
+    var crimeTypeMap = getCrimeType();
 
     const crimeDomain = [30, 45, 60, 75, 90, 105, 120];
     const colours = ["#fce1a4", "#fabf7b", "#f08f6e", "#e05c5c", "#d12959", "#ab1866", "#6e005f"];
@@ -76,7 +86,7 @@ const createVisualization = () => {
     const infoCard = d3.select(".legend").append("svg")
         .attr("class", "info-card")
         .attr("width", "400px")
-        .attr("height", "280px");
+        .attr("height", "300px");
 
     //a function used to create and update the information card
     const createInfo = () => {
@@ -84,11 +94,11 @@ const createVisualization = () => {
             .attr("class", "crime-card")
             .attr("width", (d) => {
                 if (selectedCommunity.length <= 13){
-                    return "300px";
+                    return "315px";
                 } else if ( selectedCommunity.length < 19){
-                    return "335px";
+                    return "345px";
                 } else {
-                    return "375px";
+                    return "390px";
                 }
             })
             .attr("height", "270px")
@@ -134,7 +144,7 @@ const createVisualization = () => {
                 .attr("class", (d) =>{
                     return "crimeType-" + i;
                 })
-                .text(crimeTypes[i] + `: ${getCrimeType()[crimeTypes[i] + selectedCommunity]}`)
+                .text(crimeTypes[i] + ": " + (crimeTypeMap[selectedCommunity] ? crimeTypeMap[selectedCommunity][crimeTypes[i]] : "No Value"))
                 .attr("font-size", "14")
                 .attr("transform", `translate(10, ${txtMove})`);
         }
@@ -147,11 +157,11 @@ const createVisualization = () => {
         d3.select(".info-card").select("rect")
             .attr("width", (d) => {
                 if (selectedCommunity.length <= 13){
-                    return "300px";
+                    return "315px";
                 } else if ( selectedCommunity.length < 19){
-                    return "335px";
+                    return "345px";
                 } else {
-                    return "375px";
+                    return "390px";
                 }
             })
             .attr("height", "270px");
@@ -180,7 +190,7 @@ const createVisualization = () => {
 
         for(var i=0; i< crimeTypes.length;i++){
             infoCard.select(".crimeType-" + i)
-                .text(crimeTypes[i] + ": " + (getCrimeType()[crimeTypes[i] + selectedCommunity] ? getCrimeType()[crimeTypes[i] + selectedCommunity] : "No Value"));
+                .text(crimeTypes[i] + ": " + (crimeTypeMap[selectedCommunity] ? crimeTypeMap[selectedCommunity][crimeTypes[i]] : "No Value"));
         }
     };
 
@@ -241,17 +251,11 @@ const createVisualization = () => {
                 }
             });
 
-        const stationName = svg.selectAll("g")
-            .data(stations).enter()
-            .append("g")
-            .attr("transform", (d) =>{
-                return `translate(${projection([d.coordinates[1], d.coordinates[0]])[0]}, ${projection([d.coordinates[1], d.coordinates[0]])[1] - 10})`
-            });
-
         //Plot stations
         const station = svg.selectAll("g2")
             .data(stations).enter()
             .append("g")
+            .attr("class", "station")
             .attr("transform", (d) => {
                 return `translate(${projection([d.coordinates[1], d.coordinates[0]])[0]}, ${projection([d.coordinates[1], d.coordinates[0]])[1]})`
             })
@@ -261,14 +265,21 @@ const createVisualization = () => {
             })
             .on("mouseout", (d) => {
                 d3.select(".station-" + d["Station Name"].split(/[\s /]/).join("")).transition().style("opacity", 0);
-                d3.select(".circle-" + d["Station Name"].split(/[\s /]/).join("")).transition().attr("fill", "blue");
+                d3.select(".circle-" + d["Station Name"].split(/[\s /]/).join("")).transition().attr("fill", "#10a5d6");
             });
 
         station.append("circle")
             .attr("r", "4px")
-            .attr("fill", "blue")
+            .attr("fill", "#10a5d6")
             .attr("class", (d)=>{
                return "circle-" + d["Station Name"].split(/[\s /]/).join("");
+            });
+
+        const stationName = svg.selectAll("g2")
+            .data(stations).enter()
+            .append("g")
+            .attr("transform", (d) =>{
+                return `translate(${projection([d.coordinates[1], d.coordinates[0]])[0]}, ${projection([d.coordinates[1], d.coordinates[0]])[1] - 10})`
             });
 
         stationName.append("text")
@@ -281,7 +292,6 @@ const createVisualization = () => {
             .text( (d) =>{
                 return d['Station Name'];
             });
-
         //Create Legend
         d3.select(".legend").append("h3").text("Crime Count Legend");
         d3.select(".legend").append("svg")
@@ -323,6 +333,7 @@ const createVisualization = () => {
             .default(yearFilter)
             .on("onchange", d => {
                 yearFilter = yearSlider.value().toString();
+                crimeTypeMap = getCrimeType();
                 updateMap();
                 updateInfo();
 
