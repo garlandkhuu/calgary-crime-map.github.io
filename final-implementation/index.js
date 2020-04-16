@@ -265,12 +265,12 @@ const createVisualization = () => {
             })
             .on("mouseout", (d) => {
                 d3.select(".station-" + d["Station Name"].split(/[\s /]/).join("")).transition().style("opacity", 0);
-                d3.select(".circle-" + d["Station Name"].split(/[\s /]/).join("")).transition().attr("fill", "#10a5d6");
+                d3.select(".circle-" + d["Station Name"].split(/[\s /]/).join("")).transition().attr("fill", "#0078d2");
             });
 
         station.append("circle")
             .attr("r", "4px")
-            .attr("fill", "#10a5d6")
+            .attr("fill", "#006ff3")
             .attr("class", (d)=>{
                return "circle-" + d["Station Name"].split(/[\s /]/).join("");
             });
