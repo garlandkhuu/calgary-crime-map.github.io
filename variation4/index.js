@@ -130,4 +130,31 @@ const createVisualization = () => {
 
     legendBox.select(".legend-quant")
         .call(legend);
+
+    //hard coded year
+    var yrData = [2014,2015,2016,2017,2018,2019,2020];
+    var filtText = 2019;
+    var yearSlider = d3.sliderBottom()
+        .min(d3.min(yrData))
+        .max(d3.max(yrData))
+        .width(300)
+        .ticks(7)
+        .step(1)
+        .default(2010)
+        .on('onchange', d => {
+           d3.selectAll('p#slider').text(d);
+           filterText = yearSlider.value();
+            console.log(filterText);
+        });
+
+    var sliderChange = d3.selectAll('div#slider-step')
+        .append('svg')
+        .attr('width', 500)
+        .attr('height', 100)
+        .append('g')
+        .attr('transform', 'translate(30,30)');
+
+    sliderChange.call(yearSlider);
+    d3.select('slider').text((yearSlider.value()));
+
 };
