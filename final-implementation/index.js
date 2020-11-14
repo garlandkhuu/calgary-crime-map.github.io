@@ -337,9 +337,9 @@ const createVisualization = () => {
             .width(350)
             .ticks(8,"s")
             .tickFormat(d3.format(".0f"))
-            // .tickFormat(d3.format("4s"))
             .step(1)
-            .default(yearFilter)
+            .tickValues(yrData)
+            .default(2012)
             .on("onchange", d => {
                 yearFilter = yearSlider.value().toString();
                 crimeTypeMap = getCrimeType();
