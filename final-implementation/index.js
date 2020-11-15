@@ -199,7 +199,7 @@ const createVisualization = () => {
         //this projection scales geographic coordinates to the appropriate screen size
         var projection = d3.geoMercator()
             .center([-114.0719, 51.0447])
-            .scale(window.screen.height*80)
+            .scale(window.screen.height*88)
             .translate([width/2, height/2 - 50]);
 
         var path = d3.geoPath()
