@@ -199,11 +199,17 @@ const createVisualization = () => {
         //this projection scales geographic coordinates to the appropriate screen size
         var projection = d3.geoMercator()
             .center([-114.0719, 51.0447])
-            .scale(window.screen.height*80)
+            .scale(window.innerHeight*95)
             .translate([width/2, height/2 - 50]);
 
         var path = d3.geoPath()
             .projection(projection);
+
+        d3.select(window).on("resize", () => {
+            d3.select(".map").select("svg")
+                .attr("transform-origin", "top right")
+                .attr("transform", `scale(${window.innerHeight/originalWindowHeight})`)
+        });
 
         const newCrimeCounts = getTotalCrimeCounts();
         //Create Calgary map with community borders
