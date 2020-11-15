@@ -6,20 +6,12 @@ const createVisualization = () => {
         return community.properties.name;
     });
     const width = 950, height = 1100;
+    const originalWindowHeight = window.innerHeight;
     var selectedCommunity = "DOWNTOWN COMMERCIAL CORE";
     var yearFilter = "2012";
     var includedCommunities = allCommunities;
     var mapToggle = false;
     const crimeTypes = ["Assault (Non-domestic)", "Commercial Break & Enter", "Physical Disorder", "Residential Break & Enter", "Social Disorder", "Theft FROM Vehicle", "Street Robbery", "Theft OF Vehicle", "Violence Other (Non-domestic)"];
-
-    //this projection scales geographic coordinates to the appropriate screen size
-    var projection = d3.geoMercator()
-        .center([-114.0719, 51.0447])
-        .scale(95000)
-        .translate([width/2, height/2 - 50]);
-
-    var path = d3.geoPath()
-        .projection(projection);
 
     //These are all crimes in 2019
     const crimeData2019 = crimes.filter((crime) => {
@@ -77,7 +69,7 @@ const createVisualization = () => {
             return false;
         }
         return false
-    }
+    };
 
     const crimeDomain = [30, 45, 60, 75, 90, 105, 120];
     const colours = ["#fce1a4", "#fabf7b", "#f08f6e", "#e05c5c", "#d12959", "#ab1866", "#6e005f"];
@@ -204,6 +196,15 @@ const createVisualization = () => {
     };
 
     const drawMap = () => {
+        //this projection scales geographic coordinates to the appropriate screen size
+        var projection = d3.geoMercator()
+            .center([-114.0719, 51.0447])
+            .scale(window.screen.height*80)
+            .translate([width/2, height/2 - 50]);
+
+        var path = d3.geoPath()
+            .projection(projection);
+
         const newCrimeCounts = getTotalCrimeCounts();
         //Create Calgary map with community borders
         svg.selectAll("path")
