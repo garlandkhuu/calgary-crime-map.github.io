@@ -279,7 +279,7 @@ const createVisualization = () => {
             });
 
         station.append("circle")
-            .attr("r", "4px")
+            .attr("r", "3px")
             .attr("fill", "#03c9ac")
             .attr("class", (d)=>{
                return "circle-" + d["Station Name"].split(/[\s /]/).join("");
