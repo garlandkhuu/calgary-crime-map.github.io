@@ -121,6 +121,12 @@
         z-index: 1;
     }
 
+    .invisible
+    {
+        display: none;
+    }
+
+
     /* Button 1 */
     #button-1 .knobs:before
     {
@@ -171,7 +177,7 @@
     <meta name="description" content="A visualization of the reported crimes in Calgary's communities from 2012 - 2019" />
     <meta name="title" property="og:title" content="Calgary Crime and Disorder Map" />
     <meta property="og:type" content="Website" />
-    <meta name="image" property="og:image" content="https://lh6.googleusercontent.com/0iRgf7yKHISdt0CPVVxVEeRMujiOXgm3Qfy3zESL6mCEc7u04p_nveoHVYbaQn31eS3w_vMIkYpeEg=w1920-h937-rw" />
+    <meta name="image" property="og:image" content="https://live.staticflickr.com/65535/50608516132_f447a3395e_b.jpg" />
     <meta name="description" property="og:description" content="A visualization of the reported crimes in Calgary's communities from 2012 - 2019" />
     <meta name="author" content="Garland Khuu" />
     <title>Calgary Crime and Disorder Map</title>
@@ -210,9 +216,8 @@
         </div>
     </div>
 </div>
-<div class="description-wrap">
-
-</div>
+<div class="description-wrap"></div>
+<img class="invisible" src="../assets/preview.png">
 <script>
     createVisualization();
 </script>
