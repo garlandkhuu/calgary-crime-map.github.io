@@ -160,7 +160,6 @@ const createVisualization = () => {
     };
 
     const updateInfo = () => {
-        console.log(crimeTypeMap[selectedCommunity]);
         infoCard.select(".card-title")
             .text(`${selectedCommunity} (${yearFilter})`)
 
@@ -216,8 +215,6 @@ const createVisualization = () => {
                     updateInfo();
                     updateMap();
                 }
-                console.log("community-" + d.properties["name"]);
-                console.log(getTotalCrimeCounts()[selectedCommunity])
             })
             .on("mouseover", (d) => {
                 //Turn stroke to transparent #00ffd1 went mouse over except for the selected community
@@ -347,8 +344,6 @@ const createVisualization = () => {
             .append("g")
             .attr("transform", "translate(30,30)");
 
-        console.log(d3.select("#slider-step").select("#parameter-value"));
-
         sliderChange.call(yearSlider);
 
         d3.select("#slider-step").select("svg")
@@ -368,14 +363,12 @@ const createVisualization = () => {
                     mapToggle = !mapToggle;
                     updateMap();
                     updateInfo();
-                    console.log(includedCommunities);
                 }
                 else {
                     includedCommunities = communitiesNearStations;
                     mapToggle = !mapToggle;
                     updateMap();
                     updateInfo();
-                    console.log(includedCommunities);
                 }
             });
 
