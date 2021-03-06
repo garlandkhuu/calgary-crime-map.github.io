@@ -5,7 +5,7 @@ const createVisualization = () => {
     const allCommunities = communities.features.map((community) => {
         return community.properties.name;
     });
-    const width = 820, height = 1100;
+    const width = 980, height = 1300;
     const originalWindowHeight = window.innerHeight;
     var selectedCommunity = "DOWNTOWN COMMERCIAL CORE";
     var yearFilter = "2012";
@@ -182,7 +182,7 @@ const createVisualization = () => {
         //this projection scales geographic coordinates to the appropriate screen size
         var projection = d3.geoMercator()
             .center([-114.0719, 51.0447])
-            .scale(window.screen.height*88)
+            .scale(window.screen.height*80)
             .translate([width/2, height/2 - 50]);
 
         var path = d3.geoPath()
