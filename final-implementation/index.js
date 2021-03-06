@@ -12,6 +12,17 @@ const createVisualization = () => {
     var includedCommunities = allCommunities;
     var mapToggle = false;
     const crimeTypes = ["Assault (Non-domestic)", "Commercial Break & Enter", "Physical Disorder", "Residential Break & Enter", "Social Disorder", "Theft FROM Vehicle", "Street Robbery", "Theft OF Vehicle", "Violence Other (Non-domestic)"];
+    const crimeClassMap = {
+        "Assault (Non-domestic)": 'assault-nd',
+        "Commercial Break & Enter": 'comm-break-enter',
+        "Physical Disorder": 'physical-disord',
+        "Residential Break & Enter": 'res-break-enter',
+        "Social Disorder": "social-disord",
+        "Theft FROM Vehicle": "theft-frm-vehicle",
+        "Street Robbery": "street-robb",
+        "Theft OF Vehicle": "theft-of-vehicle",
+        "Violence Other (Non-domestic)": "violence-other-nd"
+    }
 
     //These are all crimes in 2019
     const crimeData2019 = crimes.filter((crime) => {
@@ -84,114 +95,87 @@ const createVisualization = () => {
         .attr("height", height);
 
     //Create crime information card
-    const infoCard = d3.select(".legend").append("svg")
+    const infoCard = d3.select(".info-wrapper").append("svg")
         .attr("class", "info-card")
-        .attr("width", "400px")
-        .attr("height", "300px");
+        .attr("width", "500px")
+        .attr("height", "500px");
+    
+    var xScale = d3.scaleBand().range([0, 400]).domain(crimeTypes).padding(0.4),
+        yScale = d3.scaleLinear().range([400, 100]).domain([0, 18]);
 
     //a function used to create and update the information card
     const createInfo = () => {
         infoCard.append("rect")
             .attr("class", "crime-card")
-            .attr("width", (d) => {
-                if (selectedCommunity.length <= 13){
-                    return "315px";
-                } else if ( selectedCommunity.length < 19){
-                    return "345px";
-                } else {
-                    return "390px";
-                }
-            })
-            .attr("height", "270px")
+            .attr("width", '500px')
+            .attr("height", "500px")
             .attr("stroke", "white")
             .attr("fill", "black");
 
         infoCard.append("text")
             .attr("class", "card-title")
-            .text(`${selectedCommunity}`)
-            .attr("font-size", (d) => {
-                //makes it so text will fit in box
-                if (selectedCommunity.length <= 13){
-                    return 35;
-                } else if ( selectedCommunity.length < 19){
-                    return 24;
-                } else {
-                    return 20;
-                }
-            })
-            .attr("transform", "translate(10, 36)");
+            .text(`${selectedCommunity} (${yearFilter})`)
+            .attr("font-size", "16px")
+            .attr("x", "50%")
+            .attr("y", "6%")
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "middle");
 
         infoCard.append("text")
-            .attr("class", "card-year")
-            .text(`Year: ${yearFilter}`)
-            .attr("font-size", "14")
-            .attr("transform", "translate(10, 72)");
+            .attr("class", "card-subtitle")
+            .text("Total Crime Count: " + (getTotalCrimeCounts()[selectedCommunity] ? getTotalCrimeCounts()[selectedCommunity] : "No Value"))
+            .attr("font-size", "14px")
+            .attr("x", "50%")
+            .attr("y", "10%")
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "middle");
 
-        infoCard.append("text")
-            .attr("class", "card-name")
-            .text(`Community Name: ${selectedCommunity}`)
-            .attr("font-size", "14")
-            .attr("transform", "translate(10, 86)");
+        infoCard.append("g")
+            .attr("transform", "translate(70, 360)")
+            .attr("class", "x-scale")
+            .call(d3.axisBottom(xScale))
+            .selectAll("text")
+              .attr("transform", "translate(-10,0)rotate(-45)")
+              .style("text-anchor", "end")
+              .style("stroke-width", "0px")
+              .style("font-size", "12px");
 
-        infoCard.append("text")
-            .attr("class", "card-count")
-            .text("Crime Count: " + (getTotalCrimeCounts()[selectedCommunity] ? getTotalCrimeCounts()[selectedCommunity] : "No Value"))
-            .attr("font-size", "14")
-            .attr("transform", "translate(10, 100)");
+        infoCard.append("g")
+            .call(d3.axisLeft(yScale))
+            .attr("transform", "translate(70, -40)")
+            .attr("stroke", "white");
 
-        for (var i = 0; i < crimeTypes.length; i++){
-            var txtMove = 114 + (17 * i);
-            infoCard.append("text")
-                .attr("class", (d) =>{
-                    return "crimeType-" + i;
-                })
-                .text(crimeTypes[i] + ": " + (isCrimeCountValid(crimeTypes[i]) ? crimeTypeMap[selectedCommunity][crimeTypes[i]] : "No Value"))
-                .attr("font-size", "14")
-                .attr("transform", `translate(10, ${txtMove})`);
-        }
+        infoCard.selectAll("bar")
+            .data(crimeTypes)
+            .enter().append("rect")
+            .attr("class", function(d) { return `bar-${crimeClassMap[d]}` })
+            .style("fill", "#ab1866")
+            .attr("x", function(d) { return xScale(d) + 70; })
+            .attr("width", "20px")
+            .attr("y", function(d) { return isCrimeCountValid(d) ? yScale(crimeTypeMap[selectedCommunity][d]) - 40 : 360; })
+            .attr("height", function(d) { return isCrimeCountValid(d) ? 400 - yScale(crimeTypeMap[selectedCommunity][d]) : 0; })
 
         infoCard.selectAll("text")
             .attr("fill", "white");
     };
 
     const updateInfo = () => {
-        d3.select(".info-card").select("rect")
-            .attr("width", (d) => {
-                if (selectedCommunity.length <= 13){
-                    return "315px";
-                } else if ( selectedCommunity.length < 19){
-                    return "345px";
-                } else {
-                    return "390px";
-                }
-            })
-            .attr("height", "270px");
-
+        console.log(crimeTypeMap[selectedCommunity]);
         infoCard.select(".card-title")
-            .text(`${selectedCommunity}`)
-            .attr("font-size", (d) => {
-                //makes it so text will fit in box
-                if (selectedCommunity.length <= 13){
-                    return 35;
-                } else if ( selectedCommunity.length < 19){
-                    return 24;
-                } else {
-                    return 20;
-                }
-            });
+            .text(`${selectedCommunity} (${yearFilter})`)
 
-        infoCard.select(".card-year")
-            .text(`Year: ${yearFilter}`);
+        infoCard.select(".card-subtitle")
+            .text("Total Crime Count: " + (getTotalCrimeCounts()[selectedCommunity] ? getTotalCrimeCounts()[selectedCommunity] : "No Value"));
 
-        infoCard.select(".card-name")
-            .text(`Community Name: ${selectedCommunity}`);
-
-        infoCard.select(".card-count")
-            .text("Crime Count: " + (getTotalCrimeCounts()[selectedCommunity] ? getTotalCrimeCounts()[selectedCommunity] : "No Value"));
-
-        for(var i=0; i< crimeTypes.length;i++){
-            infoCard.select(".crimeType-" + i)
-                .text(crimeTypes[i] + ": " + (isCrimeCountValid(crimeTypes[i]) ? crimeTypeMap[selectedCommunity][crimeTypes[i]] : "No Value"));
+        for(var i = 0; i < crimeTypes.length; i++) {
+            const d = crimeTypes[i];
+            infoCard.select(`.bar-${crimeClassMap[d]}`)
+                .transition()
+                .duration(500)
+                .attr("x", xScale(d) + 70)
+                .attr("width", "20px")
+                .attr("y", isCrimeCountValid(d) ? yScale(crimeTypeMap[selectedCommunity][d]) - 40 : 360)
+                .attr("height",  isCrimeCountValid(d) ? 400 - yScale(crimeTypeMap[selectedCommunity][d]) : 0);
         }
     };
 
