@@ -10,6 +10,13 @@
         justify-content: center;
     }
 
+    .map {
+        display: flex;
+        flex-direction: row;
+        margin-top: 30px;
+        margin-left: -165px;
+    }
+
     .legend {
         display: flex;
         flex-direction: column;
@@ -42,10 +49,7 @@
 
     h1 {
         font-weight: lighter;
-        margin-top: 60px;
-    }
-
-    path {
+        margin-top: 40px;
     }
 
     /*================================================================
@@ -131,7 +135,21 @@
     {
         width: 500px;
         height: 500px;
-        margin-bottom: 30px;
+        margin-bottom: 50px;
+    }
+
+    .legend-wrapper
+    {
+        height: fit-content;
+        margin-top: 620px;
+        transform: translateX(222px);
+        border: 1px solid white;
+        padding: 10px 20px;
+    }
+
+    .label
+    {
+        font-size: 12px;
     }
 
     .x-scale > .tick line{
@@ -205,7 +223,8 @@
 <body>
 <div class="wrapper">
     <div class="map">
-
+        <div class="legend-wrapper"></div>
+        <div class="map-wrapper"></div>
     </div>
     <div class="legend">
         <h1>Calgary LRT & Communities Crime Map</h1>

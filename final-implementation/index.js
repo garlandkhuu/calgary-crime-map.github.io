@@ -5,7 +5,7 @@ const createVisualization = () => {
     const allCommunities = communities.features.map((community) => {
         return community.properties.name;
     });
-    const width = 950, height = 1100;
+    const width = 820, height = 1100;
     const originalWindowHeight = window.innerHeight;
     var selectedCommunity = "DOWNTOWN COMMERCIAL CORE";
     var yearFilter = "2012";
@@ -90,7 +90,7 @@ const createVisualization = () => {
         .domain(crimeDomain)
         .range(colours);
 
-    var svg = d3.select(".map").append("svg")
+    var svg = d3.select(".map").select(".map-wrapper").append("svg")
         .attr("width", width)
         .attr("height", height);
 
@@ -286,11 +286,15 @@ const createVisualization = () => {
             .text( (d) =>{
                 return d['Station Name'];
             });
+        
         //Create Legend
-        d3.select(".legend").append("h3")
+        d3.select(".map").select(".legend-wrapper").append("h3")
             .text("Crime Count Legend")
+            .style("font-size", "14px")
+            .style("font-family", "arial")
+            .style("font-weight", "lighter")
             .attr("class", "legend-heading");
-        d3.select(".legend").append("svg")
+        d3.select(".map").select(".legend-wrapper").append("svg")
             .attr("class", "legend-box")
             .append("g")
             .attr("class", "legend-quant");
@@ -300,14 +304,15 @@ const createVisualization = () => {
             .labels(d3.legendHelpers.thresholdLabels)
             .scale(colourScale)
             .shapePadding(5)
-            .shapeWidth(18)
-            .shapeHeight(18)
+            .shapeWidth(12)
+            .shapeHeight(12)
             .labelOffset(12);
 
         var legendBox = d3.select(".legend-box");
 
         legendBox
-            .attr("height", "200px");
+            .attr("height", "130px")
+            .attr("width", "130px");
 
         legendBox.select(".legend-quant")
             .call(legend);
