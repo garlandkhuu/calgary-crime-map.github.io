@@ -11,10 +11,11 @@ const createVisualization = () => {
     var yearFilter = "2012";
     var includedCommunities = allCommunities;
     var mapToggle = false;
-    const crimeTypes = ["Assault (Non-domestic)", "Commercial Break & Enter", "Physical Disorder", "Residential Break & Enter", "Social Disorder", "Theft FROM Vehicle", "Street Robbery", "Theft OF Vehicle", "Violence Other (Non-domestic)"];
+    const crimeTypes = ["Assault (Non-domestic)", "Commercial Break & Enter", "Commercial Robbery", "Physical Disorder", "Residential Break & Enter", "Social Disorder", "Theft FROM Vehicle", "Street Robbery", "Theft OF Vehicle", "Violence Other (Non-domestic)"];
     const crimeClassMap = {
         "Assault (Non-domestic)": 'assault-nd',
         "Commercial Break & Enter": 'comm-break-enter',
+        "Commercial Robbery": "comm-rob",
         "Physical Disorder": 'physical-disord',
         "Residential Break & Enter": 'res-break-enter',
         "Social Disorder": "social-disord",
@@ -43,11 +44,15 @@ const createVisualization = () => {
     //get aggregated data for total crimes
     const getTotalCrimeCounts = () => {
         var totalCrimes = {};
+        var crimeTypes = {};
         getStationCrimesForYear().forEach((crime) => {
             const communityName = crime["Community Name"];
+            const crimeType = crime["Category"];
             //If there is an entry in the totalCrimes map for that specific community, increment the count, else, initialize to 1.
             totalCrimes[communityName] = totalCrimes[communityName] ? totalCrimes[communityName] + 1 : 1;
+            crimeTypes[crimeType] = crimeTypes[crimeType] ? crimeTypes[crimeType] + 1 : 1;
         });
+        console.log(crimeTypes);
         return totalCrimes;
     };
 
