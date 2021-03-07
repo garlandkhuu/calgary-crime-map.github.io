@@ -164,12 +164,12 @@ const createVisualization = () => {
             .on("mouseover", (d) => {
                 d3.select(`.bar-${crimeClassMap[d]}`)
                     .transition()
-                    .duration(150)
+                    .duration(100)
                     .style("fill", "#db3b78");
 
                 d3.select(`.count-${crimeClassMap[d]}`)
                     .transition()
-                    .duration(150)
+                    .duration(100)
                     .attr("y", function(d) { return isCrimeCountValid(d) ? crimeTypeMap[selectedCommunity][d] === 1 ? yScale(crimeTypeMap[selectedCommunity][d]) - 50 : yScale(crimeTypeMap[selectedCommunity][d]) - 52 : 360; });
 
                 d3.select('.x-axis')
@@ -179,18 +179,18 @@ const createVisualization = () => {
                         return d3.select(this).text() != d;
                     })
                     .transition()
-                    .duration(150)
+                    .duration(200)
                     .style("opacity", "0.4");
             })
             .on("mouseout", (d) => {
                 d3.select(`.bar-${crimeClassMap[d]}`)
                     .transition()
-                    .duration(150)
+                    .duration(100)
                     .style("fill", "#ab1866");
               
                 d3.select(`.count-${crimeClassMap[d]}`)
                     .transition()
-                    .duration(150)
+                    .duration(100)
                     .attr("y", function(d) { return isCrimeCountValid(d) ? crimeTypeMap[selectedCommunity][d] === 1 ? yScale(crimeTypeMap[selectedCommunity][d]) - 33 : yScale(crimeTypeMap[selectedCommunity][d]) - 30 : 360; });
   
                 d3.select('.x-axis')
@@ -200,7 +200,7 @@ const createVisualization = () => {
                         return d3.select(this).text() != d;
                     })
                     .transition()
-                    .duration(150)
+                    .duration(200)
                     .style("opacity", "1");
               });
 
