@@ -101,7 +101,7 @@ const createVisualization = () => {
         .attr("height", "500px");
     
     var xScale = d3.scaleBand().range([0, 400]).domain(crimeTypes).padding(0.4),
-        yScale = d3.scaleLinear().range([400, 100]).domain([0, 18]);
+        yScale = d3.scaleLinear().range([400, 100]).domain([0, 26]);
 
     //a function used to create and update the information card
     const createInfo = () => {
@@ -131,8 +131,8 @@ const createVisualization = () => {
             .attr("dominant-baseline", "middle");
 
         infoCard.append("g")
+            .attr("class", "x-axis")
             .attr("transform", "translate(70, 360)")
-            .attr("class", "x-scale")
             .call(d3.axisBottom(xScale))
             .selectAll("text")
               .attr("transform", "translate(-10,0)rotate(-45)")
@@ -141,19 +141,84 @@ const createVisualization = () => {
               .style("font-size", "12px");
 
         infoCard.append("g")
+            .attr("class", "y-axis")
             .call(d3.axisLeft(yScale))
             .attr("transform", "translate(70, -40)")
-            .attr("stroke", "white");
+            .attr("stroke", "white")
+            .selectAll("text")
+                .style("stroke-width", "0px")
+                .style("font-size", "12px");
+            
 
+        //Populate graph with bars
         infoCard.selectAll("bar")
             .data(crimeTypes)
             .enter().append("rect")
             .attr("class", function(d) { return `bar-${crimeClassMap[d]}` })
             .style("fill", "#ab1866")
+            .style("cursor", "pointer")
             .attr("x", function(d) { return xScale(d) + 70; })
-            .attr("width", "20px")
+            .attr("width", "25px")
             .attr("y", function(d) { return isCrimeCountValid(d) ? yScale(crimeTypeMap[selectedCommunity][d]) - 40 : 360; })
             .attr("height", function(d) { return isCrimeCountValid(d) ? 400 - yScale(crimeTypeMap[selectedCommunity][d]) : 0; })
+            .on("mouseover", (d) => {
+                d3.select(`.bar-${crimeClassMap[d]}`)
+                    .transition()
+                    .duration(150)
+                    .style("fill", "#db3b78");
+
+                d3.select(`.count-${crimeClassMap[d]}`)
+                    .transition()
+                    .duration(150)
+                    .attr("y", function(d) { return isCrimeCountValid(d) ? crimeTypeMap[selectedCommunity][d] === 1 ? yScale(crimeTypeMap[selectedCommunity][d]) - 50 : yScale(crimeTypeMap[selectedCommunity][d]) - 52 : 360; });
+
+                d3.select('.x-axis')
+                    .selectAll("g")
+                    .selectAll("text")
+                    .filter(function() {
+                        return d3.select(this).text() != d;
+                    })
+                    .transition()
+                    .duration(150)
+                    .style("opacity", "0.4");
+            })
+            .on("mouseout", (d) => {
+                d3.select(`.bar-${crimeClassMap[d]}`)
+                    .transition()
+                    .duration(150)
+                    .style("fill", "#ab1866");
+              
+                d3.select(`.count-${crimeClassMap[d]}`)
+                    .transition()
+                    .duration(150)
+                    .attr("y", function(d) { return isCrimeCountValid(d) ? crimeTypeMap[selectedCommunity][d] === 1 ? yScale(crimeTypeMap[selectedCommunity][d]) - 33 : yScale(crimeTypeMap[selectedCommunity][d]) - 30 : 360; });
+  
+                d3.select('.x-axis')
+                    .selectAll("g")
+                    .selectAll("text")
+                    .filter(function() {
+                        return d3.select(this).text() != d;
+                    })
+                    .transition()
+                    .duration(150)
+                    .style("opacity", "1");
+              });
+
+        //Insert count on top of bars
+        infoCard.selectAll("count")
+            .data(crimeTypes)
+            .enter().append("text")
+            .attr("class", function(d) { return `count-${crimeClassMap[d]}` })
+            .attr("stroke", "white")
+            .attr("stroke-width", "0px")
+            .attr("x", function(d) { return xScale(d) + 82; })
+            .attr("y", function(d) { return isCrimeCountValid(d) ? crimeTypeMap[selectedCommunity][d] === 1 ? yScale(crimeTypeMap[selectedCommunity][d]) - 33 : yScale(crimeTypeMap[selectedCommunity][d]) - 30 : 360; })
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "middle")
+            .attr("font-size", "12px")
+            .style("pointer-events", "none")
+            .text(function(d) { return crimeTypeMap[selectedCommunity][d] });
+
 
         infoCard.selectAll("text")
             .attr("fill", "white");
@@ -170,11 +235,19 @@ const createVisualization = () => {
             const d = crimeTypes[i];
             infoCard.select(`.bar-${crimeClassMap[d]}`)
                 .transition()
-                .duration(500)
+                .duration(300)
                 .attr("x", xScale(d) + 70)
-                .attr("width", "20px")
                 .attr("y", isCrimeCountValid(d) ? yScale(crimeTypeMap[selectedCommunity][d]) - 40 : 360)
-                .attr("height",  isCrimeCountValid(d) ? 400 - yScale(crimeTypeMap[selectedCommunity][d]) : 0);
+                .attr("height",  isCrimeCountValid(d) ? 400 - yScale(crimeTypeMap[selectedCommunity][d]) : 0)
+        }
+
+        for(var i = 0; i < crimeTypes.length; i++) {
+            const d = crimeTypes[i];
+            infoCard.select(`.count-${crimeClassMap[d]}`)
+                .transition()
+                .duration(300)
+                .attr("y", function(d) { return isCrimeCountValid(d) ? crimeTypeMap[selectedCommunity][d] === 1 ? yScale(crimeTypeMap[selectedCommunity][d]) - 33 : yScale(crimeTypeMap[selectedCommunity][d]) - 30 : 360; })
+                .text(isCrimeCountValid(d) ? crimeTypeMap[selectedCommunity][d] : '');
         }
     };
 
